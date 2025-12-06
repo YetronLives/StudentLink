@@ -13,12 +13,12 @@ const client = new DynamoDBClient({
 });
 
 const command = new CreateTableCommand({
-    TableName: "Users",
+    TableName: "User",
     AttributeDefinitions: [
-        { AttributeName: "UserId", AttributeType: "S" },
+        { AttributeName: "user_id", AttributeType: "S" },
     ],
     KeySchema: [
-        { AttributeName: "UserId", KeyType: "HASH" }, // Partition key
+        { AttributeName: "user_id", KeyType: "HASH" }, // Partition key
     ],
     ProvisionedThroughput: {
         ReadCapacityUnits: 5,

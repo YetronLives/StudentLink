@@ -43,16 +43,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
             return true;
         },
-        async jwt({ token, user }) {
+        async jwt({ token, user, account }) {
             if (user) {
-                token.id = user.id;
+                if (account?.provider === "google") {
+                    const dbUser = await fetchUserByEmailSSO(user.email);
+                    if (dbUser) {
+                        token.id = dbUser.user_id; // Map DynamoDB ID to token
+                        token.school = dbUser.school;
+                        token.major = dbUser.major;
+                        token.username = dbUser.username;
+                    }
+                } else {
+                token.id = user.user_id;
                 token.email = user.email;
                 token.username = user.username;
-                token.firstName = user.firstName;
-                token.lastName = user.lastName;
+                token.name = user.name;
                 token.school = user.school;
                 token.major = user.major;
-            }
+            }}
             return token;
         },
         async session({ session, token }) {
@@ -60,8 +68,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 session.user.id = token.id;
                 session.user.email = token.email;
                 session.user.username = token.username;
-                session.user.firstName = token.firstName;
-                session.user.lastName = token.lastName;
+                session.user.name = token.name; // full name
                 session.user.school = token.school;
                 session.user.major = token.major;
             }

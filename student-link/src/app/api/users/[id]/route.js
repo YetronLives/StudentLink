@@ -8,10 +8,10 @@ export async function PUT(req) {
     const userId = uuidv4();
 
     const params = {
-        TableName: "Users",
+        TableName: "User",
         Item: {
             user_id: userId,
-            name: {body.firstname, body.lastName},
+            name: `${body.firstName} ${body.lastName}`,
             username: body.username,
             email: body.email,
             password: body.password, // 🔒 hash in real app!

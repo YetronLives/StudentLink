@@ -4,23 +4,25 @@ import { ddbDocClient } from "@/lib/dynamodb"
 import { v4 as uuidv4 } from "uuid"
 
 export async function POST(req) {
-    const body = await req.json()
-    const { email, username, school, major } = body
-    const userId = uuidv4()
+    const body = await req.json();
+    const { firstName, lastName, email, username, school, major, year } = body;
+    const userId = uuidv4();
 
     const params = {
-        TableName: "Users",
+        TableName: "User",
         Item: {
-            UserId: userId,
-            Email: email,
-            Username: username,
-            School: school,
-            Major: major,
-            Courses: [],
-            CreationDate: new Date().toISOString(),
+            user_id: userId,
+            email: email,
+            username: username,
+            school: school,
+            name: `${firstName} ${lastName}`,
+            major: major,
+            year: year,
+            library: [],
+            created_at: new Date().toISOString(),
         },
-    }
+    };
 
-    await ddbDocClient.send(new PutCommand(params))
-    return new Response("User completed", { status: 201 })
+    await ddbDocClient.send(new PutCommand(params));
+    return new Response("User completed", { status: 201 });
 }

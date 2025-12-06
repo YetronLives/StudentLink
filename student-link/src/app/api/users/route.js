@@ -10,18 +10,18 @@ export async function POST(req) {
     const passwordHash = await bcrypt.hash(body.password, 10);
 
     const params = {
-        TableName: "Users",
+        TableName: "User",
         Item: {
-            UserId: userId,
-            FirstName: body.firstName,
-            LastName: body.lastName,
-            Username: body.username,
-            Email: body.email,
-            PasswordHash: passwordHash, // 🔒 hash in real app!
-            School: body.school,
-            Major: body.major,
-            Courses: body.courses || [],
-            CreationDate: new Date().toISOString(),
+            user_id: userId,
+            name: `${body.firstName} ${body.lastName}`,
+            username: body.username,
+            email: body.email,
+            password: passwordHash,
+            school: body.school,
+            major: body.major,
+            library: [],
+            year: body.year,
+            created_at: new Date().toISOString(),
         },
     };
 

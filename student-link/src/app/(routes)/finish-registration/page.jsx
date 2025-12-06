@@ -1,11 +1,12 @@
 import styles from './finish-registration.module.css';
-import { redirect } from "next/navigation";
+import { signIn } from "@/auth"; // Ensure this path points to your auth.ts file
 
-export default async function FinishRegistrationPage({searchParams}) {
+export default async function FinishRegistrationPage({ searchParams }) {
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 6 }, (_, i) => currentYear + i);
-    const { email } = await searchParams;
 
+    // Await searchParams (Required for Next.js 15+)
+    const { email } = await searchParams;
 
     return (
         <div className={styles.container}>
@@ -13,39 +14,46 @@ export default async function FinishRegistrationPage({searchParams}) {
                 <h1 className={styles.title}>Student Link</h1>
                 <p className={styles.subtitle}>Create your account to get started.</p>
 
-                <form action={async(form) =>{
+                <form action={async (formData) => {
                     "use server";
-                    try{
-                        const body = {
-                            firstName: form.get("firstName"),
-                            lastName: form.get("lastName"),
-                            email: email,
-                            username: form.get("username"),
-                            school: form.get("school"),
-                            major: form.get("major"),
-                            year: form.get("year")
-                        }
 
+                    const body = {
+                        firstName: formData.get("firstName"),
+                        lastName: formData.get("lastName"),
+                        email: email,
+                        username: formData.get("username"),
+                        school: formData.get("school"),
+                        major: formData.get("major"),
+                        year: formData.get("year")
+                    };
+
+                    try {
+                        // 1. Create the user in your database
                         const res = await fetch("http://localhost:3000/api/users/complete", {
                             method: "POST",
-                            headers: {"Content-Type":"application/json"},
+                            headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(body),
-
                         });
+
                         if (!res.ok) {
                             const text = await res.text();
                             console.error("API returned non-OK:", res.status, text);
                             throw new Error(`API Error ${res.status}`);
                         }
 
-                    }catch(error){
-                        throw new Error("Sign up failed")
+                    } catch (error) {
+                        console.error("Registration failed:", error);
+                        // We throw here to stop execution so we don't try to sign in if DB failed
+                        throw new Error("Sign up failed");
                     }
-                    redirect("/profile")
 
+                    // 2. TRIGGER SIGN-IN
+                    // This must be OUTSIDE the try/catch block because Next.js redirects
+                    // are technically errors. If you catch them, the redirect won't happen.
+                    await signIn("google", { redirectTo: "/profile" });
                 }}
-
                       className={styles.form}>
+
                     <div className={styles.row}>
                         <div className={styles.inputGroup}>
                             <input
@@ -102,8 +110,9 @@ export default async function FinishRegistrationPage({searchParams}) {
                                 name="year"
                                 className={styles.select}
                                 required
+                                defaultValue=""
                             >
-                                <option value="">Graduation Year</option>
+                                <option value="" disabled>Graduation Year</option>
                                 {years.map(year => (
                                     <option key={year} value={year}>{year}</option>
                                 ))}

@@ -6,7 +6,6 @@ import Link from "next/link";
 import {useSession} from "next-auth/react";
 
 export default function Homepage() {
-
     const [activeCategory, setActiveCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -131,7 +130,8 @@ export default function Homepage() {
             {/* Main Content */}
             <main className={styles.main}>
                 <div className={styles.hero}>
-                    <h1 className={styles.heroTitle}>Explore Projects</h1>
+                    <h1 className={styles.heroTitle}>Explore Projects
+                    </h1>
                     <p className={styles.heroDescription}>
                         Dive into a world of coding projects designed to enhance your skills and knowledge.
                         Choose from a variety of categories and find the perfect project to match your
