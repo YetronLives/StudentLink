@@ -48,18 +48,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 if (account?.provider === "google") {
                     const dbUser = await fetchUserByEmailSSO(user.email);
                     if (dbUser) {
-                        token.id = dbUser.user_id; // Map DynamoDB ID to token
+                        token.id = dbUser.id;
+                        token.email = dbUser.email;
+                        token.name = dbUser.name;
                         token.school = dbUser.school;
                         token.major = dbUser.major;
                         token.username = dbUser.username;
+                        token.year = dbUser.year;
+
                     }
                 } else {
-                token.id = user.user_id;
+                token.id = user.id;
                 token.email = user.email;
                 token.username = user.username;
                 token.name = user.name;
                 token.school = user.school;
                 token.major = user.major;
+                token.year = user.year;
             }}
             return token;
         },
@@ -71,6 +76,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 session.user.name = token.name; // full name
                 session.user.school = token.school;
                 session.user.major = token.major;
+                session.user.year = token.year;
             }
             return session;
         },

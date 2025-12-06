@@ -47,6 +47,7 @@ export async function validateUserCredentials(email, password) {
         name: user.name,
         school: user.school,
         major: user.major,
+        year: user.year,
     };
 }
 
@@ -63,5 +64,6 @@ export async function fetchUserByEmailSSO(email) {
         name: user.name,
         school: user.school,
         major: user.major,
+        year: user.year,
     };
 }

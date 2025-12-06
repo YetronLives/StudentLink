@@ -18,8 +18,9 @@ export default async function Profile() {
             >
                 <button>Sign out</button>
                 </form>
+            <pre>{JSON.stringify(user, null, 2)}</pre>
                 <div>{user.email}</div>
-                <div>{user.firstName}</div>
+                <div>{user.name}</div>
         </div>
 );
 }
