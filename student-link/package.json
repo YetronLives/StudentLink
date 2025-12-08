@@ -2,20 +2,29 @@
   "name": "student-link",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "create-table": "node src/app/scripts/createUsersTable.js"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.896.0",
+    "@aws-sdk/lib-dynamodb": "^3.896.0",
+    "bcryptjs": "^3.0.2",
+    "next": "15.5.3",
+    "next-auth": "^5.0.0-beta.29",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.3"
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "24.8.1",
+    "@types/react": "19.2.2",
     "eslint": "^9",
-    "eslint-config-next": "15.5.3",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-next": "15.5.3"
   }
 }
