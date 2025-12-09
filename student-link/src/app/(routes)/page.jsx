@@ -106,26 +106,6 @@ export default function Homepage() {
     return (
         <div className={styles.container}>
             {/* Header */}
-            <header className={styles.header}>
-                <div className={styles.headerContent}>
-                    <div className={styles.logo}>
-                        <div className={styles.logoIcon}>📚</div>
-                        <span className={styles.logoText}>StudentLink</span>
-                    </div>
-                    <nav className={styles.nav}>
-                        <a href="#" className={`${styles.navLink} ${styles.active}`}>Home</a>
-                        <a href="#" className={styles.navLink}>Projects</a>
-                        <a href="#" className={styles.navLink}>Tutorials</a>
-                        <a href="#" className={styles.navLink}>Community</a>
-                    </nav>
-                    <div className={styles.userSection}>
-                        <button className={styles.notificationBtn}>🔔</button>
-                        <div className={styles.userProfile}>
-                            <Link href="/login" className={styles.avatar}>👤</Link>
-                        </div>
-                    </div>
-                </div>
-            </header>
 
             {/* Main Content */}
             <main className={styles.main}>
