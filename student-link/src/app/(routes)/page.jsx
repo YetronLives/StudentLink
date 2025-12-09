@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import styles from './homepage.module.css';
 import Link from "next/link";
-import {useSession} from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Homepage() {
     const [activeCategory, setActiveCategory] = useState('All');
@@ -11,8 +11,35 @@ export default function Homepage() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showUserMenu, setShowUserMenu] = useState(false);
 
     const categories = ['All', 'Frontend', 'Backend', 'Fullstack', 'Mobile'];
+
+    // Use client-side session hook
+    const { data: session, status } = useSession();
+    const user = session?.user;
+
+    // Handle session changes and refresh when needed
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            // Reset any user-specific state when signed out
+            setShowUserMenu(false);
+        }
+    }, [status, session]);
+
+    // Close user menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showUserMenu && !event.target.closest(`.${styles.userMenuContainer}`)) {
+                setShowUserMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showUserMenu]); 
 
     // Fetch projects from Lambda API
     useEffect(() => {
@@ -107,8 +134,45 @@ export default function Homepage() {
                     <div className={styles.userSection}>
                         <button className={styles.notificationBtn}>🔔</button>
                         <div className={styles.userProfile}>
-                            <Link href="/login" className={styles.avatar}>👤</Link>
+                            {status === "loading" ? (
+                                <div className={styles.avatar}>⏳</div>
+                            ) : session ? (
+                                <div className={styles.userMenuContainer}>
+                                    <button 
+                                        className={styles.avatar}
+                                        onClick={() => setShowUserMenu(!showUserMenu)}
+                                        title={`${user?.name || 'User'}'s menu`}
+                                    >
+                                        {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '👤'}
+                                    </button>
+                                    {showUserMenu && (
+                                        <div className={styles.userDropdown}>
+                                            <Link href="/profile" className={styles.dropdownItem} onClick={() => setShowUserMenu(false)}>
+                                                <span className={styles.dropdownIcon}>👤</span>
+                                                View Profile
+                                            </Link>
+                                            <button 
+                                                className={styles.dropdownItem}
+                                                onClick={async () => {
+                                                    setShowUserMenu(false);
+                                                    await signOut({ redirect: false });
+                                                }}
+                                            >
+                                                <span className={styles.dropdownIcon}>🚪</span>
+                                                Sign Out
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <Link href="/login" className={styles.avatar}>👤</Link>
+                            )}
                         </div>
+                        {session && user && (
+                            <div className={styles.welcomeMessage}>
+                                <p>Welcome, {user.name?.split(' ')[0] || user.username || 'Student'}!</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </header>

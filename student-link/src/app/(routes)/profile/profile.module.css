@@ -1,0 +1,523 @@
+.container {
+    min-height: 100vh;
+    background: #0a0e1a;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Header Styles */
+.header {
+    background: #0f1419;
+    border-bottom: 1px solid #1a1f2e;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.headerContent {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+}
+
+.homeLink {
+    text-decoration: none;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #ffffff;
+}
+
+.logoIcon {
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    padding: 0.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav {
+    display: flex;
+    gap: 2rem;
+}
+
+.navLink {
+    color: #94a3b8;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    padding: 0.5rem 0;
+}
+
+.navLink:hover,
+.navLink.active {
+    color: #ffffff;
+}
+
+/* Main Content */
+.main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Profile Header */
+.profileHeader {
+    margin-bottom: 3rem;
+}
+
+.profileInfo {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+.avatarSection {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    border: 4px solid rgba(59, 130, 246, 0.2);
+}
+
+.editAvatarBtn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #374151;
+    border: 2px solid #0a0e1a;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #94a3b8;
+    transition: all 0.2s ease;
+}
+
+.editAvatarBtn:hover {
+    background: #3b82f6;
+    color: #ffffff;
+}
+
+.userDetails {
+    flex: 1;
+}
+
+.userName {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.userTitle {
+    color: #64748b;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.userMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.metaItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+.metaIcon {
+    font-size: 1.125rem;
+}
+
+/* Stats Section */
+.statsSection {
+    margin-bottom: 3rem;
+}
+
+.sectionTitle {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.statCard {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.statCard:hover {
+    border-color: rgba(71, 85, 105, 0.6);
+    transform: translateY(-2px);
+}
+
+.statIcon {
+    font-size: 2.5rem;
+    background: rgba(59, 130, 246, 0.1);
+    padding: 1rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.statContent {
+    flex: 1;
+}
+
+.statValue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.25rem;
+}
+
+.statLabel {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Content Grid */
+.contentGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+/* Section Cards */
+.sectionCard {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.sectionCard:hover {
+    border-color: rgba(71, 85, 105, 0.6);
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 2rem 0 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.cardTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+}
+
+.cardIcon {
+    font-size: 1.25rem;
+}
+
+.editBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    color: #94a3b8;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.editBtn:hover {
+    border-color: #3b82f6;
+    color: #ffffff;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.cardContent {
+    padding: 0 2rem 2rem 2rem;
+}
+
+/* Info Grid */
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.infoLabel {
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.infoValue {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Activity Section */
+.activityList {
+    min-height: 200px;
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.emptyState h4 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.emptyState p {
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.startBtn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.startBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Settings List */
+.settingsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.settingItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: transparent;
+    border: 1px solid rgba(71, 85, 105, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #94a3b8;
+    width: 100%;
+    text-align: left;
+}
+
+.settingItem:hover {
+    border-color: rgba(71, 85, 105, 0.4);
+    background: rgba(30, 41, 59, 0.4);
+    color: #ffffff;
+}
+
+.settingIcon {
+    font-size: 1.125rem;
+}
+
+.settingText {
+    flex: 1;
+    font-weight: 500;
+}
+
+.settingArrow {
+    color: #64748b;
+    font-weight: bold;
+}
+
+/* Danger Zone */
+.dangerZone {
+    border-top: 1px solid rgba(71, 85, 105, 0.2);
+    padding-top: 2rem;
+}
+
+.signOutBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: transparent;
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    width: 100%;
+}
+
+.signOutBtn:hover {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: #f87171;
+}
+
+.btnIcon {
+    font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main {
+        padding: 1rem;
+    }
+
+    .contentGrid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .profileInfo {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .userName {
+        font-size: 2rem;
+    }
+
+    .userMeta {
+        justify-content: center;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .infoGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .header {
+        padding: 0 1rem;
+    }
+
+    .nav {
+        display: none;
+    }
+
+    .avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 2rem;
+    }
+
+    .cardHeader {
+        padding: 1.5rem 1.5rem 0 1.5rem;
+    }
+
+    .cardContent {
+        padding: 0 1.5rem 1.5rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .userName {
+        font-size: 1.75rem;
+    }
+
+    .statCard {
+        padding: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .statIcon {
+        font-size: 2rem;
+        padding: 0.75rem;
+    }
+
+    .statValue {
+        font-size: 1.5rem;
+    }
+}
