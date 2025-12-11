@@ -387,3 +387,43 @@
         font-size: 1.125rem;
     }
 }
+
+/* 👇 PASTE THE NEW CODE BELOW HERE 👇 */
+
+/* 🔥 Special Project Navbar Styles */
+.specialNav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Pushes button left, logo right */
+    width: 100%;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    color: #94a3b8;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.backButton:hover {
+    color: #ffffff;
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.homeLink {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Reuse your existing logo styles, but ensuring text color matches */
+.homeLink .logo {
+    color: #ffffff;
+}

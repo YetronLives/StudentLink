@@ -13,6 +13,7 @@ export default function TutorialsPage() {
     const categories = ['All', 'Basics', 'Frontend', 'Backend', 'DevOps', 'Security', 'Data Structures & Algorithms'];
 
     const tutorials = [
+
         {
             id: 1,
             title: 'Understanding React Hooks',
