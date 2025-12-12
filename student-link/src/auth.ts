@@ -55,6 +55,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         token.major = dbUser.major;
                         token.username = dbUser.username;
                         token.year = dbUser.year;
+                        token.avatarUrl = dbUser.avatarUrl;
 
                     }
                 } else {
@@ -65,6 +66,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 token.school = user.school;
                 token.major = user.major;
                 token.year = user.year;
+                token.avatarUrl = user.avatarUrl;
             }}
             return token;
         },
@@ -77,6 +79,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 session.user.school = token.school;
                 session.user.major = token.major;
                 session.user.year = token.year;
+                session.user.avatarUrl = token.avatarUrl;
             }
             return session;
         },
