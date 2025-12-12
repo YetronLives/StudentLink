@@ -18,13 +18,13 @@ export default function ProjectDetail() {
                 setLoading(true);
                 // Fetch specific project by ID from Lambda API
                 const response = await fetch(`https://pztzwg4px33xusqhiabkgsbtge0eixpa.lambda-url.us-east-1.on.aws?id=${params.id}`);
-
+                
                 if (!response.ok) {
                     throw new Error('Failed to fetch project');
                 }
-
+                
                 const projectData = await response.json();
-
+                
                 // The API returns the project directly, not in a projects array
                 setProject(projectData);
             } catch (err) {
@@ -104,10 +104,96 @@ export default function ProjectDetail() {
         }
     };
 
+    {/* Notes functionality */}
+    const NotesBox = ({ projectId }) => {
+        const storageKey = `project-notes-${projectId}`;
+        const [notes, setNotes] = useState([]);
+        const [text, setText] = useState('');
+
+        useEffect(() => {
+            try {
+                const raw = localStorage.getItem(storageKey);
+                if (raw) setNotes(JSON.parse(raw));
+            } catch (e) {
+                console.error('Failed to load notes', e);
+            }
+        }, [storageKey]);
+
+        useEffect(() => {
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(notes));
+            } catch (e) {
+                console.error('Failed to save notes', e);
+            }
+        }, [notes, storageKey]);
+
+        const addNote = () => {
+            const trimmed = (text || '').trim();
+            if (!trimmed) return;
+            const newNote = { id: Date.now(), text: trimmed, done: false };
+            setNotes(prev => [newNote, ...prev]);
+            setText('');
+        };
+
+        const toggleDone = (id) => {
+            setNotes(prev => prev.map(n => n.id === id ? { ...n, done: !n.done } : n));
+        };
+
+        const deleteNote = (id) => {
+            setNotes(prev => prev.filter(n => n.id !== id));
+        };
+
+        return (
+            <>
+                <h4 className={styles.notesTitle}>Notes</h4>
+                <p className={styles.notesHint}>Quick notes for this project (saved locally).</p>
+
+                <div className={styles.notesInputWrap}>
+                    <input
+                        className={styles.notesInput}
+                        value={text}
+                        onChange={e => setText(e.target.value)}
+                        placeholder="Add a quick note..."
+                        onKeyDown={e => { if (e.key === 'Enter') addNote(); }}
+                    />
+                    <button className={styles.notesAddBtn} onClick={addNote}>Add</button>
+                </div>
+
+                <div className={styles.notesList}>
+                    {notes.length === 0 && (
+                        <div className={styles.notesEmpty}>No notes yet.</div>
+                    )}
+                    {notes.map(note => (
+                        <label key={note.id} className={styles.noteItem}>
+                            <input type="checkbox" checked={note.done} onChange={() => toggleDone(note.id)} />
+                            <span className={note.done ? styles.noteTextDone : styles.noteText}>{note.text}</span>
+                            <button className={styles.noteDelete} onClick={(e) => { e.preventDefault(); deleteNote(note.id); }}>✕</button>
+                        </label>
+                    ))}
+                </div>
+            </>
+        );
+    };
+
     return (
         <div className={styles.container}>
             {/* Header */}
-
+            <header className={styles.header}>
+                <div className={styles.headerContent}>
+                    <button onClick={() => router.back()} className={styles.backButton}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="m15 18-6-6 6-6"/>
+                        </svg>
+                        Back
+                    </button>
+                    <Link href="/" className={styles.homeLink}>
+                        <div className={styles.logo}>
+                            <div className={styles.logoIcon}>📚</div>
+                            <span>StudentLink</span>
+                        </div>
+                    </Link>
+                </div>
+            </header>
 
             {/* Main Content */}
             <main className={styles.main}>
@@ -119,7 +205,7 @@ export default function ProjectDetail() {
                         </div>
                         <div className={styles.projectId}>Project #{project.project_id}</div>
                     </div>
-
+                    
                     <h1 className={styles.projectTitle}>{project.title}</h1>
                     <p className={styles.projectDescription}>{project.description}</p>
                 </div>
@@ -169,19 +255,21 @@ export default function ProjectDetail() {
                                 </div>
                             </div>
 
-                            <div className={styles.sectionCard}>
-                                <h2 className={styles.sectionTitle}>
-                                    <span className={styles.sectionIcon}>🎯</span>
-                                    What You'll Learn
-                                </h2>
-                                <div className={styles.sectionContent}>
-                                    <ul className={styles.learningList}>
-                                        <li>Build a complete {project.category.toLowerCase()} application</li>
-                                        <li>Implement best practices and modern development patterns</li>
-                                        <li>Work with real-world project requirements</li>
-                                        <li>Deploy and maintain your application</li>
-                                        <li>Understand project architecture and design decisions</li>
-                                    </ul>
+                            <div>
+                                <div className={styles.sectionCard}>
+                                    <h2 className={styles.sectionTitle}>
+                                        <span className={styles.sectionIcon}>🎯</span>
+                                        What You'll Learn
+                                    </h2>
+                                    <div className={styles.sectionContent}>
+                                        <ul className={styles.learningList}>
+                                            <li>Build a complete {project.category.toLowerCase()} application</li>
+                                            <li>Implement best practices and modern development patterns</li>
+                                            <li>Work with real-world project requirements</li>
+                                            <li>Deploy and maintain your application</li>
+                                            <li>Understand project architecture and design decisions</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -193,23 +281,23 @@ export default function ProjectDetail() {
                                 <p className={styles.actionDescription}>
                                     Begin this project and start building your skills with hands-on experience.
                                 </p>
-
+                                
                                 <div className={styles.actionButtons}>
-                                    <a
-                                        href={project.link}
-                                        target="_blank"
+                                    <a 
+                                        href={project.link} 
+                                        target="_blank" 
                                         rel="noopener noreferrer"
                                         className={styles.primaryBtn}
                                     >
                                         <span className={styles.btnIcon}>🚀</span>
                                         Start Project
                                     </a>
-
+                                    
                                     <button className={styles.secondaryBtn}>
                                         <span className={styles.btnIcon}>🔖</span>
                                         Bookmark
                                     </button>
-
+                                    
                                     <button className={styles.secondaryBtn}>
                                         <span className={styles.btnIcon}>📤</span>
                                         Share
@@ -230,7 +318,13 @@ export default function ProjectDetail() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Notes card in the right column, */}
+                            <div className={`${styles.sectionCard} ${styles.notesCard}`}>
+                                <NotesBox projectId={project.project_id} />
+                            </div>
                         </div>
+                        
                     </div>
                 </div>
             </main>

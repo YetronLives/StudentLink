@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import styles from './homepage.module.css';
 import Link from "next/link";
-import {useSession} from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Homepage() {
     const [activeCategory, setActiveCategory] = useState('All');
@@ -11,8 +11,35 @@ export default function Homepage() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showUserMenu, setShowUserMenu] = useState(false);
 
     const categories = ['All', 'Frontend', 'Backend', 'Fullstack', 'Mobile'];
+
+    // Use client-side session hook
+    const { data: session, status } = useSession();
+    const user = session?.user;
+
+    // Handle session changes and refresh when needed
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            // Reset any user-specific state when signed out
+            setShowUserMenu(false);
+        }
+    }, [status, session]);
+
+    // Close user menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showUserMenu && !event.target.closest(`.${styles.userMenuContainer}`)) {
+                setShowUserMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showUserMenu]); 
 
     // Fetch projects from Lambda API
     useEffect(() => {
@@ -20,13 +47,13 @@ export default function Homepage() {
             try {
                 setLoading(true);
                 const response = await fetch('https://gzqpzdayrxgnhtxex3s4o7hfje0fkwup.lambda-url.us-east-1.on.aws/');
-
+                
                 if (!response.ok) {
                     throw new Error('Failed to fetch projects');
                 }
-
+                
                 const data = await response.json();
-
+                
                 // Transform API data to match component structure
                 const transformedProjects = data.projects.map(project => ({
                     id: project.project_id,
@@ -38,7 +65,7 @@ export default function Homepage() {
                     image: '/api/placeholder/300/200',
                     bookmark: false,
                 }));
-
+                
                 setProjects(transformedProjects);
             } catch (err) {
                 setError(err.message);
@@ -71,7 +98,7 @@ export default function Homepage() {
                     <p className={styles.projectDescription}>Prerequisites: {project.prerequisite}</p>
                     <div className={styles.projectFooter}>
                         <span className={styles.projectCategory}>{project.category}</span>
-                        <button
+                        <button 
                             className={styles.bookmarkBtn}
                             onClick={(e) => {
                                 e.preventDefault();
@@ -92,7 +119,63 @@ export default function Homepage() {
     return (
         <div className={styles.container}>
             {/* Header */}
-
+            <header className={styles.header}>
+                <div className={styles.headerContent}>
+                    <div className={styles.logo}>
+                        <div className={styles.logoIcon}>📚</div>
+                        <span className={styles.logoText}>StudentLink</span>
+                    </div>
+                    <nav className={styles.nav}>
+                        <a href="#" className={`${styles.navLink} ${styles.active}`}>Home</a>
+                        <a href="#" className={styles.navLink}>Projects</a>
+                        <a href="#" className={styles.navLink}>Tutorials</a>
+                        <a href="#" className={styles.navLink}>Community</a>
+                    </nav>
+                    <div className={styles.userSection}>
+                        <button className={styles.notificationBtn}>🔔</button>
+                        <div className={styles.userProfile}>
+                            {status === "loading" ? (
+                                <div className={styles.avatar}>⏳</div>
+                            ) : session ? (
+                                <div className={styles.userMenuContainer}>
+                                    <button 
+                                        className={styles.avatar}
+                                        onClick={() => setShowUserMenu(!showUserMenu)}
+                                        title={`${user?.name || 'User'}'s menu`}
+                                    >
+                                        {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '👤'}
+                                    </button>
+                                    {showUserMenu && (
+                                        <div className={styles.userDropdown}>
+                                            <Link href="/profile" className={styles.dropdownItem} onClick={() => setShowUserMenu(false)}>
+                                                <span className={styles.dropdownIcon}>👤</span>
+                                                View Profile
+                                            </Link>
+                                            <button 
+                                                className={styles.dropdownItem}
+                                                onClick={async () => {
+                                                    setShowUserMenu(false);
+                                                    await signOut({ redirect: false });
+                                                }}
+                                            >
+                                                <span className={styles.dropdownIcon}>🚪</span>
+                                                Sign Out
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <Link href="/login" className={styles.avatar}>👤</Link>
+                            )}
+                        </div>
+                        {session && user && (
+                            <div className={styles.welcomeMessage}>
+                                <p>Welcome, {user.name?.split(' ')[0] || user.username || 'Student'}!</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </header>
 
             {/* Main Content */}
             <main className={styles.main}>
@@ -139,28 +222,28 @@ export default function Homepage() {
                 {/* Featured Projects */}
                 <section className={styles.projectSection}>
                     <h2 className={styles.sectionTitle}>Featured Projects</h2>
-
+                    
                     {loading && (
                         <div className={styles.loadingState}>
                             <p>Loading projects...</p>
                         </div>
                     )}
-
+                    
                     {error && (
                         <div className={styles.errorState}>
                             <p>Error loading projects: {error}</p>
                             <button onClick={() => window.location.reload()}>Retry</button>
                         </div>
                     )}
-
+                    
                     {!loading && !error && (
                         <div className={styles.projectGrid}>
                             {projects
-                                .filter(project =>
+                                .filter(project => 
                                     activeCategory === 'All' || project.category === activeCategory
                                 )
                                 .filter(project =>
-                                    searchQuery === '' ||
+                                    searchQuery === '' || 
                                     project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                     project.description.toLowerCase().includes(searchQuery.toLowerCase())
                                 )
