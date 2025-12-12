@@ -252,7 +252,7 @@ export default function Profile() {
     return (
         <div className={styles.container}>
             {/* Header */}
-            <header className={styles.header}>
+            {/* <header className={styles.header}>
                 <div className={styles.headerContent}>
                     <Link href="/" className={styles.homeLink}>
                         <div className={styles.logo}>
@@ -265,7 +265,7 @@ export default function Profile() {
                         <Link href="/profile" className={`${styles.navLink} ${styles.active}`}>Profile</Link>
                     </nav>
                 </div>
-            </header>
+            </header> */}
 
             {/* Main Content */}
             <main className={styles.main}>
