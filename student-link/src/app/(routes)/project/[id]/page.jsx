@@ -105,6 +105,77 @@ export default function ProjectDetail() {
         }
     };
 
+    {/* Notes functionality */}
+    const NotesBox = ({ projectId }) => {
+        const storageKey = `project-notes-${projectId}`;
+        const [notes, setNotes] = useState([]);
+        const [text, setText] = useState('');
+
+        useEffect(() => {
+            try {
+                const raw = localStorage.getItem(storageKey);
+                if (raw) setNotes(JSON.parse(raw));
+            } catch (e) {
+                console.error('Failed to load notes', e);
+            }
+        }, [storageKey]);
+
+        useEffect(() => {
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(notes));
+            } catch (e) {
+                console.error('Failed to save notes', e);
+            }
+        }, [notes, storageKey]);
+
+        const addNote = () => {
+            const trimmed = (text || '').trim();
+            if (!trimmed) return;
+            const newNote = { id: Date.now(), text: trimmed, done: false };
+            setNotes(prev => [newNote, ...prev]);
+            setText('');
+        };
+
+        const toggleDone = (id) => {
+            setNotes(prev => prev.map(n => n.id === id ? { ...n, done: !n.done } : n));
+        };
+
+        const deleteNote = (id) => {
+            setNotes(prev => prev.filter(n => n.id !== id));
+        };
+
+        return (
+            <>
+                <h4 className={styles.notesTitle}>Notes</h4>
+                <p className={styles.notesHint}>Quick notes for this project (saved locally).</p>
+
+                <div className={styles.notesInputWrap}>
+                    <input
+                        className={styles.notesInput}
+                        value={text}
+                        onChange={e => setText(e.target.value)}
+                        placeholder="Add a quick note..."
+                        onKeyDown={e => { if (e.key === 'Enter') addNote(); }}
+                    />
+                    <button className={styles.notesAddBtn} onClick={addNote}>Add</button>
+                </div>
+
+                <div className={styles.notesList}>
+                    {notes.length === 0 && (
+                        <div className={styles.notesEmpty}>No notes yet.</div>
+                    )}
+                    {notes.map(note => (
+                        <label key={note.id} className={styles.noteItem}>
+                            <input type="checkbox" checked={note.done} onChange={() => toggleDone(note.id)} />
+                            <span className={note.done ? styles.noteTextDone : styles.noteText}>{note.text}</span>
+                            <button className={styles.noteDelete} onClick={(e) => { e.preventDefault(); deleteNote(note.id); }}>✕</button>
+                        </label>
+                    ))}
+                </div>
+            </>
+        );
+    };
+
     return (
         <div className={styles.container}>
             {/* Header */}
@@ -256,7 +327,13 @@ export default function ProjectDetail() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Notes card in the right column, */}
+                            <div className={`${styles.sectionCard} ${styles.notesCard}`}>
+                                <NotesBox projectId={project.project_id} />
+                            </div>
                         </div>
+                        
                     </div>
                 </div>
             </main>
