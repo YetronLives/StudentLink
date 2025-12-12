@@ -1,26 +1,20 @@
-import {auth, signOut} from "@/auth";
-import {redirect} from "next/navigation";
-
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import SignOutButton from "./SignOutButton";
 
 export default async function Profile() {
-    const session = await auth()
-    if(!session)redirect("/")
-    const user = session?.user //User will have these fields to display:  {email, id, username, firstName, lastName, school, major}
+    const session = await auth();
+    if (!session) redirect("/");
+
+    const user = session.user;
 
     return (
         <div>
-            <form
-                action={async (formData) => {
-                    "use server"
+            <SignOutButton />
 
-                    await signOut()
-                }}
-            >
-                <button>Sign out</button>
-                </form>
             <pre>{JSON.stringify(user, null, 2)}</pre>
-                <div>{user.email}</div>
-                <div>{user.name}</div>
+            <div>{user.email}</div>
+            <div>{user.name}</div>
         </div>
-);
+    );
 }

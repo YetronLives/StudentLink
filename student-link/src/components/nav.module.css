@@ -427,3 +427,38 @@
 .homeLink .logo {
     color: #ffffff;
 }
+
+/* Sign In Button Style (to be used within .userSection) */
+.signInBtn {
+    /* Basic Button Styling */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem; /* Adjust padding for height/width */
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none; /* Crucial for Link component */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    /* Color/Gradient from your existing theme */
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff; /* White text for contrast */
+    border: 1px solid #1d4ed8; /* Solid border matches gradient end */
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); /* Soft shadow for depth */
+}
+
+.signInBtn:hover {
+    /* Slightly darker/more intense background on hover */
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    border-color: #60a5fa;
+    transform: translateY(-1px); /* Subtle lift effect */
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+}
+
+.signInBtn:active {
+    /* Provides tactile feedback on click */
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
