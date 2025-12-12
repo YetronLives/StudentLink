@@ -372,6 +372,98 @@
     font-size: 0.875rem;
 }
 
+
+.notesCard {
+    margin-top: 2rem; 
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+.notesTitle {
+    margin: 0;
+    font-size: 1rem;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.notesHint {
+    margin: 0.25rem 0 0.75rem 0;
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.notesInputWrap {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.notesInput {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    background: rgba(255,255,255,0.02);
+    color: #e6eef8;
+}
+
+.notesAddBtn {
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.notesList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 220px;
+    overflow: auto;
+}
+
+.notesEmpty {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.noteItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.01);
+}
+
+.noteItem input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+.noteText {
+    flex: 1;
+    color: #e6eef8;
+}
+
+.noteTextDone {
+    flex: 1;
+    color: #64748b;
+    text-decoration: line-through;
+}
+
+.noteDelete {
+    background: transparent;
+    border: none;
+    color: #f87171;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
 /* Loading and Error States */
 .loadingState {
     display: flex;
