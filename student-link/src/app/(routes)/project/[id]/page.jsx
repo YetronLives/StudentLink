@@ -1,3 +1,4 @@
+import React from 'react';
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -61,7 +62,7 @@ export default function ProjectDetail() {
                         <button onClick={() => router.back()} className={styles.backBtn}>
                             Go Back
                         </button>
-                        <button onClick={() => window.location.reload()} className={styles.retryBtn}>
+                        <button onClick={() => globalThis.location.reload()} className={styles.retryBtn}>
                             Retry
                         </button>
                     </div>
@@ -149,7 +150,9 @@ export default function ProjectDetail() {
                                     Project Overview
                                 </h2>
                                 <div className={styles.sectionContent}>
-                                    <p>{project.description}</p>
+                                    <p>
+                                        {project.overview ? project.overview : `This is a hands-on experience designed to help you master key concepts in ${project.category}. You'll work through real-world requirements and build practical skills.`}
+                                    </p>
                                     <div className={styles.projectStats}>
                                         <div className={styles.stat}>
                                             <span className={styles.statLabel}>Category</span>
@@ -187,15 +190,23 @@ export default function ProjectDetail() {
                             <div className={styles.sectionCard}>
                                 <h2 className={styles.sectionTitle}>
                                     <span className={styles.sectionIcon}>🎯</span>
-                                    What You'll Learn
+                                    Learning Objectives
                                 </h2>
                                 <div className={styles.sectionContent}>
                                     <ul className={styles.learningList}>
-                                        <li>Build a complete {project.category.toLowerCase()} application</li>
-                                        <li>Implement best practices and modern development patterns</li>
-                                        <li>Work with real-world project requirements</li>
-                                        <li>Deploy and maintain your application</li>
-                                        <li>Understand project architecture and design decisions</li>
+                                        {project.learningObjectives && project.learningObjectives.length > 0 ? (
+                                            project.learningObjectives.map((objective, idx) => (
+                                                <li key={idx}>{objective}</li>
+                                            ))
+                                        ) : (
+                                            <>
+                                                <li>Apply modern development practices in {project.category}</li>
+                                                <li>Design and implement scalable solutions</li>
+                                                <li>Collaborate on real-world project requirements</li>
+                                                <li>Deploy and maintain your application</li>
+                                                <li>Analyze project architecture and design decisions</li>
+                                            </>
+                                        )}
                                     </ul>
                                 </div>
                             </div>
