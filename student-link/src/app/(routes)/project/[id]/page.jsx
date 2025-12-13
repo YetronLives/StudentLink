@@ -259,7 +259,7 @@ export default function ProjectDetail() {
                                 <div className={styles.sectionCard}>
                                     <h2 className={styles.sectionTitle}>
                                         <span className={styles.sectionIcon}>🎯</span>
-                                        What You'll Learn
+                                        Learning Objectives
                                     </h2>
                                     <div className={styles.sectionContent}>
                                         <ul className={styles.learningList}>
