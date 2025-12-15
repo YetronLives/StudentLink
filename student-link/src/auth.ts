@@ -1,110 +1,88 @@
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
 import { fetchUserByEmailSSO, validateUserCredentials } from "@/lib/userServerFuntions";
 
-export default NextAuth({
-    secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-development",
+export const { handlers, auth, signIn, signOut } = NextAuth({
+    secret: process.env.AUTH_SECRET,
     providers: [
-        CredentialsProvider({
+        Credentials({
             name: "Credentials",
             credentials: {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                try {
-                    if (!credentials?.email || !credentials.password) {
-                        return null;
-                    }
-
-                    const user = await validateUserCredentials(credentials.email, credentials.password);
-                    return user;
-                } catch (error) {
-                    console.error('Credentials authorize error:', error);
-                    return null;
-                }
+                if (!credentials?.email || !credentials.password) return null;
+                return await validateUserCredentials(credentials.email, credentials.password);
             },
         }),
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        Google({
+            clientId: process.env.AUTH_GOOGLE_ID,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET,
         }),
     ],
     pages: {
         signIn: "/login",
-        error: "/login",  // Redirect auth errors to login page
+        // invalid: "/login", // Optional: Redirects here on auth errors
     },
     callbacks: {
         async signIn({ user, account }) {
-            try {
-                if (account?.provider === "google") {
-                    const dbUser = await fetchUserByEmailSSO(user.email);
+            // 1. If logging in with Google...
+            if (account?.provider === "google") {
+                try {
+                    // 2. Check if this email exists in your DB
+                    const dbUser = await fetchUserByEmailSSO(user.email!);
+
+                    // 3. If NO user found, stop login and send to finish registration
                     if (!dbUser) {
-                        return true;
+                        // We pass the email/name/image so the form can pre-fill
+                        return `/finish-registration?email=${encodeURIComponent(user.email!)}&name=${encodeURIComponent(user.name || "")}&image=${encodeURIComponent(user.image || "")}`;
                     }
+
+                    // 4. If user found, let them in!
+                    return true;
+                } catch (error) {
+                    console.error("Error in Google SignIn callback:", error);
+                    return false;
                 }
-                return true;
-            } catch (error) {
-                console.error('SignIn callback error:', error);
-                return false;
             }
+            // Allow other providers (Credentials)
+            return true;
         },
         async jwt({ token, user, account }) {
-            try {
-                if (user) {
-                    if (account?.provider === "google") {
-                        const dbUser = await fetchUserByEmailSSO(user.email);
-                        if (dbUser) {
-                            token.id = dbUser.id;
-                            token.email = dbUser.email;
-                            token.name = dbUser.name;
-                            token.school = dbUser.school;
-                            token.major = dbUser.major;
-                            token.username = dbUser.username;
-                            token.year = dbUser.year;
-                            token.avatarUrl = dbUser.avatarUrl;
-                        }
-                    } else {
-                        const customUser = user as any;
-                        token.id = customUser.id;
-                        token.email = customUser.email;
-                        token.username = customUser.username;
-                        token.name = customUser.name;
-                        token.school = customUser.school;
-                        token.major = customUser.major;
-                        token.year = customUser.year;
-                        token.avatarUrl = customUser.avatarUrl;
+            // Initial sign in
+            if (user) {
+                // If it's a Google login, we need to fetch their DB data to populate the token
+                // (Because the 'user' object from Google only has name/email/image)
+                if (account?.provider === "google") {
+                    const dbUser = await fetchUserByEmailSSO(user.email!);
+                    if (dbUser) {
+                        token.id = dbUser.id;
+                        token.username = dbUser.username;
+                        token.school = dbUser.school;
+                        token.major = dbUser.major;
+                        token.year = dbUser.year;
+                        // Use DB avatar if available, otherwise Google image
+                        token.avatarUrl = dbUser.avatarUrl || user.image;
                     }
+                } else {
+                    // Credentials login already returns the full DB user object
+                    Object.assign(token, user);
                 }
-                return token;
-            } catch (error) {
-                console.error('JWT callback error:', error);
-                return token;
             }
+            return token;
         },
         async session({ session, token }) {
-            try {
-                if (session?.user && token) {
-                    session.user.id = token.id;
-                    session.user.email = token.email;
-                    session.user.username = token.username;
-                    session.user.name = token.name;
-                    session.user.school = token.school;
-                    session.user.major = token.major;
-                    session.user.year = token.year;
-                    session.user.avatarUrl = token.avatarUrl;
-                }
-                return session;
-            } catch (error) {
-                console.error('Session callback error:', error);
-                return session;
+            if (session.user && token) {
+                session.user.id = token.id as string;
+                session.user.username = token.username as string;
+                session.user.school = token.school as string;
+                session.user.major = token.major as string;
+                session.user.year = token.year as string;
+                session.user.avatarUrl = token.avatarUrl as string;
             }
-        },
-        async redirect({ url, baseUrl }) {
-            if (url.startsWith("/")) return `${baseUrl}${url}`;
-            if (new URL(url).origin === baseUrl) return url;
-            return baseUrl;
+            return session;
         },
     },
 });

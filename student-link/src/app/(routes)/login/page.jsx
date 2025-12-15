@@ -1,18 +1,17 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import styles from "./login.module.css";
 
-export default function Login() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check for OAuth errors in URL
   useEffect(() => {
     const errorParam = searchParams.get("error");
     if (errorParam) {
@@ -88,23 +87,23 @@ export default function Login() {
 
         <form onSubmit={handleCredentialsLogin} className={styles.form}>
           <div className={styles.inputGroup}>
-            <input 
-              type="email" 
-              name="email" 
-              placeholder="Email address" 
-              className={styles.input} 
-              required 
+            <input
+              type="email"
+              name="email"
+              placeholder="Email address"
+              className={styles.input}
+              required
               disabled={isLoading}
             />
           </div>
 
           <div className={styles.inputGroup}>
-            <input 
-              type="password" 
-              name="password" 
-              placeholder="Password" 
-              className={styles.input} 
-              required 
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              className={styles.input}
+              required
               disabled={isLoading}
             />
           </div>
@@ -120,8 +119,8 @@ export default function Login() {
           </button>
         </form>
 
-        <button 
-          onClick={handleGoogleLogin} 
+        <button
+          onClick={handleGoogleLogin}
           className={styles.loginButton}
           disabled={isLoading}
         >
@@ -136,5 +135,13 @@ export default function Login() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={<div className={styles.container}><div className={styles.loginCard}>Loading...</div></div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

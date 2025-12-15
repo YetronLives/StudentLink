@@ -1,8 +1,8 @@
 "use server";
 
-import { signIn as nextAuthSignIn } from "next-auth";
+import { signIn as nextAuthSignIn } from "@/auth";
 import { redirect } from "next/navigation";
-import { AuthError } from "next-auth";
+import { AuthError } from "@/auth";
 
 export async function signInWithCredentials(formData) {
     try {

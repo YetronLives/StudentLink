@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import {SessionProvider} from "next-auth/react";
+import {SessionProvider} from "@/auth";
 import Providers from "@/app/providers.jsx";
 import Navbar from "@/components/navbar.jsx";
 export const metadata = {

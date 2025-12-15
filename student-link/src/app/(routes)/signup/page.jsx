@@ -10,20 +10,9 @@ export default function Signup() {
   const router = useRouter();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 6 }, (_, i) => currentYear + i);
-
-  const handleGoogleSignup = async () => {
-    setIsLoading(true);
-    try {
-      await signIn("google", { callbackUrl: "/" });
-    } catch (err) {
-      console.error("Google signup failed:", err);
-      setError("Google signup failed");
-      setIsLoading(false);
-    }
-  };
 
   const handleCredentialsSignup = async (e) => {
     e.preventDefault();
@@ -43,28 +32,24 @@ export default function Signup() {
       year: formData.get("year"),
     };
 
-    if (body.confirmPassword !== body.password) {
+    if (body.password !== body.confirmPassword) {
       setError("Passwords don't match");
       setIsLoading(false);
       return;
     }
 
     try {
-      // Create the user
-      const createResponse = await fetch("/api/users", {
+      const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
 
-      if (!createResponse.ok) {
-        const errorData = await createResponse.json();
-        setError(errorData.message || "Failed to create account");
-        setIsLoading(false);
-        return;
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to create account");
       }
 
-      // Sign in with credentials
       const result = await signIn("credentials", {
         email: body.email,
         password: body.password,
@@ -77,9 +62,20 @@ export default function Signup() {
         router.push("/profile");
       }
     } catch (err) {
-      console.error("❌ SignUp failed:", err);
-      setError("Sign up failed");
+      console.error("Signup failed:", err);
+      setError(err.message || "Failed to create account");
     } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    setIsLoading(true);
+    try {
+      await signIn("google", { callbackUrl: "/profile" });
+    } catch (err) {
+      console.error("Google sign-up failed:", err);
+      setError("Google sign-up failed");
       setIsLoading(false);
     }
   };
@@ -90,106 +86,105 @@ export default function Signup() {
         <h1 className={styles.title}>Student Link</h1>
         <p className={styles.subtitle}>Create your account to get started.</p>
 
-        {error && <p style={{ color: "red", textAlign: "center", marginBottom: "10px" }}>{error}</p>}
+        {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
 
-        <div style={{ marginBottom: 10, textAlign: "center" }}>
-          <button 
-            onClick={handleGoogleSignup} 
-            className={styles.signupButton}
-            disabled={isLoading}
-          >
-            Sign up with Google
-          </button>
-        </div>
+        <button
+          onClick={handleGoogleSignup}
+          className={styles.signupButton}
+          disabled={isLoading}
+          style={{ marginBottom: 20 }}
+        >
+          Sign up with Google
+        </button>
 
         <form onSubmit={handleCredentialsSignup} className={styles.form}>
           <div className={styles.row}>
             <div className={styles.inputGroup}>
-              <input 
-                type="text" 
-                name="firstName" 
-                placeholder="First Name" 
-                className={styles.input} 
-                required 
+              <input
+                type="text"
+                name="firstName"
+                placeholder="First Name"
+                className={styles.input}
+                required
                 disabled={isLoading}
               />
             </div>
             <div className={styles.inputGroup}>
-              <input 
-                type="text" 
-                name="lastName" 
-                placeholder="Last Name" 
-                className={styles.input} 
-                required 
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Last Name"
+                className={styles.input}
+                required
                 disabled={isLoading}
               />
             </div>
           </div>
 
           <div className={styles.inputGroup}>
-            <input 
-              type="text" 
-              name="username" 
-              placeholder="Username" 
-              className={styles.input} 
-              required 
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              className={styles.input}
+              required
               disabled={isLoading}
             />
           </div>
 
           <div className={styles.inputGroup}>
-            <input 
-              type="email" 
-              name="email" 
-              placeholder="Email address" 
-              className={styles.input} 
-              required 
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className={styles.row}>
-            <div className={styles.inputGroup}>
-              <input 
-                type="password" 
-                name="password" 
-                placeholder="Password" 
-                className={styles.input} 
-                required 
-                disabled={isLoading}
-              />
-            </div>
-            <div className={styles.inputGroup}>
-              <input 
-                type="password" 
-                name="confirmPassword" 
-                placeholder="Confirm Password" 
-                className={styles.input} 
-                required 
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          <div className={styles.inputGroup}>
-            <input 
-              type="text" 
-              name="school" 
-              placeholder="School/University" 
-              className={styles.input} 
-              required 
+            <input
+              type="email"
+              name="email"
+              placeholder="Email address"
+              className={styles.input}
+              required
               disabled={isLoading}
             />
           </div>
 
           <div className={styles.row}>
             <div className={styles.inputGroup}>
-              <input 
-                type="text" 
-                name="major" 
-                placeholder="Major/Field of Study" 
-                className={styles.input} 
-                required 
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                className={styles.input}
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <div className={styles.inputGroup}>
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                className={styles.input}
+                required
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
+          <div className={styles.inputGroup}>
+            <input
+              type="text"
+              name="school"
+              placeholder="School/University"
+              className={styles.input}
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className={styles.row}>
+            <div className={styles.inputGroup}>
+              <input
+                type="text"
+                name="major"
+                placeholder="Major/Field of Study"
+                className={styles.input}
+                required
                 disabled={isLoading}
               />
             </div>
