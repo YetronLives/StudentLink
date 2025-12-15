@@ -20,12 +20,25 @@ export default withAuth(
     },
     {
         callbacks: {
-            authorized: ({ token }) => !!token
+            authorized: ({ token, req }) => {
+                // Allow access to public routes without authentication
+                const publicRoutes = ["/", "/login", "/signup", "/api/auth"];
+                const isPublicRoute = publicRoutes.some(route => 
+                    req.nextUrl.pathname.startsWith(route)
+                );
+                
+                if (isPublicRoute) return true;
+                
+                // Require authentication for protected routes
+                return !!token;
+            }
         },
     }
 );
 
 // 5. Standard Matcher (prevents middleware from running on static files/images)
 export const config = {
-    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+    // Temporarily disable middleware to test redirect loop
+    matcher: [],
+    // matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
