@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import styles from './login.module.css';
-import { signIn} from "@/auth";
+import { signIn } from "next-auth";
 import {AuthError} from "next-auth";
 import Link from "next/link";
 

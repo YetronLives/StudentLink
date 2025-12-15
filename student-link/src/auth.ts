@@ -1,11 +1,20 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
-import Credentials from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { fetchUserByEmailSSO, validateUserCredentials } from "@/lib/userServerFuntions";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+// Debug environment variables
+console.log('NextAuth Environment Check:', {
+  NEXTAUTH_SECRET: !!process.env.NEXTAUTH_SECRET,
+  GOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: !!process.env.GOOGLE_CLIENT_SECRET,
+  NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+});
+
+export default NextAuth({
+    secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-development",
     providers: [
-        Credentials({
+        CredentialsProvider({
             name: "Credentials",
             credentials: {
                 email: { label: "Email", type: "text" },
@@ -25,9 +34,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 return user;
             },
         }),
-        Google({
-            clientId: process.env.AUTH_GOOGLE_ID,
-            clientSecret: process.env.AUTH_GOOGLE_SECRET,
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         }),
     ],
     pages: {
@@ -59,14 +68,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
                     }
                 } else {
-                token.id = user.id;
-                token.email = user.email;
-                token.username = user.username;
-                token.name = user.name;
-                token.school = user.school;
-                token.major = user.major;
-                token.year = user.year;
-                token.avatarUrl = user.avatarUrl;
+                // Cast user to our extended User type
+                const customUser = user as any;
+                token.id = customUser.id;
+                token.email = customUser.email;
+                token.username = customUser.username;
+                token.name = customUser.name;
+                token.school = customUser.school;
+                token.major = customUser.major;
+                token.year = customUser.year;
+                token.avatarUrl = customUser.avatarUrl;
             }}
             return token;
         },

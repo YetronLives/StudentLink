@@ -1,4 +1,4 @@
-import { signIn } from "@/auth";
+import { signIn } from "next-auth";
 import Link from 'next/link';
 import styles from './signup.module.css';
 import {AuthError} from "next-auth";
