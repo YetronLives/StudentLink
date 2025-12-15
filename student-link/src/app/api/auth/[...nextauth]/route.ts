@@ -1,4 +1,4 @@
-import NextAuth from '@/auth-test'
+import { handlers } from "@/auth";
 
-export const GET = NextAuth;
-export const POST = NextAuth;
+export const runtime = "nodejs";
+export const { GET, POST } = handlers;

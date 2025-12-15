@@ -1,5 +1,5 @@
 import styles from './finish-registration.module.css';
-import { signIn } from "next-auth";
+import { signIn } from "@/auth";
 
 export default async function FinishRegistrationPage({ searchParams }) {
     const currentYear = new Date().getFullYear();

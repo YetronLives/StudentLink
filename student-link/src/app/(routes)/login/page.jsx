@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import styles from './login.module.css';
-import { signIn } from "next-auth";
-import {AuthError} from "next-auth";
+import { signIn } from "@/auth";
 import Link from "next/link";
 
 export default async function Login() {
@@ -15,23 +14,12 @@ export default async function Login() {
                 <form
                     action={async (form) => {
                         "use server";
-                        const result = await signIn("credentials", {
+
+                        await signIn("credentials", {
                             email: form.get("email"),
                             password: form.get("password"),
-                            redirectTo: "/profile",
+                            redirectTo: "/profile", // v5 will handle redirect internally
                         });
-
-                        // NextAuth may return a URL string or just internally redirect
-                        if (typeof result === "string") {
-                            return redirect(result);
-                        }
-
-                        // If result is null, that means invalid credentials
-                        if (!result) {
-                            throw new Error("Invalid credentials");
-                        }
-
-                        return redirect("/profile");
                     }}
                     className={styles.form}
                 >
@@ -71,21 +59,10 @@ export default async function Login() {
                 <form
                     action={async () => {
                         "use server";
-                        try {
-                            const url = await signIn("google", {redirectTo: "/profile",});
-
-                            if (url) return redirect(url);
-                        } catch (error) {
-                            if (error instanceof AuthError) {
-                                return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
-                            }
-                            throw error;
-                        }
+                        await signIn("google", { redirectTo: "/profile" });
                     }}
                 >
-                    <button className={styles.loginButton}>
-                        Sign in with Google
-                    </button>
+                    <button className={styles.loginButton}>Sign in with Google</button>
                 </form>
 
                 <p className={styles.signupText}>

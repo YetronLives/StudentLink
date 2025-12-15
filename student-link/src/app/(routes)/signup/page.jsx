@@ -1,7 +1,7 @@
-import { signIn } from "next-auth";
+import { signIn } from "@/auth";
 import Link from 'next/link';
 import styles from './signup.module.css';
-import {AuthError} from "next-auth";
+
 import {redirect} from "next/navigation";
 
 
@@ -22,10 +22,9 @@ export default function Signup() {
 
                             if(url) return redirect(url);
                         } catch (error) {
-                            if (error instanceof AuthError) {
-                                return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
-                            }
-                            throw error;
+                            console.error("Sign-in error:", error);
+
+                            // Optional: redirect to a generic error page
                         }
                     }
                     }><button className={styles.signupButton}>Sign up with Google</button></form>

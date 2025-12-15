@@ -1,49 +1,30 @@
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
 import { fetchUserByEmailSSO, validateUserCredentials } from "@/lib/userServerFuntions";
 
-// Debug environment variables (simplified)
-if (process.env.NODE_ENV === 'development') {
-  console.log('NextAuth Environment Check:', {
-    NEXTAUTH_SECRET: !!process.env.NEXTAUTH_SECRET,
-    GOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET: !!process.env.GOOGLE_CLIENT_SECRET,
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-  });
-}
-
-export default NextAuth({
-    secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-development",
+export const {
+    handlers,
+    auth,
+    signIn,
+    signOut,
+} = NextAuth({
+    secret: process.env.AUTH_SECRET,
     providers: [
-        CredentialsProvider({
+        Credentials({
             name: "Credentials",
             credentials: {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                try {
-                    console.log("🧠 [NextAuth] Authorize called with:", credentials);
-
-                    if (!credentials?.email || !credentials.password) {
-                        console.error("🚨 Missing credentials in authorize()");
-                        return null;
-                    }
-
-                    const user = await validateUserCredentials(credentials.email, credentials.password);
-                    console.log("✅ [NextAuth] validateUserCredentials returned:", user);
-
-                    return user;
-                } catch (error) {
-                    console.error('Credentials authorize error:', error);
-                    return null;
-                }
+                if (!credentials?.email || !credentials.password) return null;
+                return await validateUserCredentials(credentials.email, credentials.password);
             },
         }),
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        Google({
+            clientId: process.env.AUTH_GOOGLE_ID!,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET!,
         }),
     ],
     pages: {
@@ -51,81 +32,30 @@ export default NextAuth({
     },
     callbacks: {
         async signIn({ user, account }) {
-            try {
-                if (account?.provider === "google") {
-                    const dbUser = await fetchUserByEmailSSO(user.email);
-                    if (!dbUser) {
-                        // Allow sign-in but handle registration in redirect callback
-                        return true;
-                    }
-                }
+            if (account?.provider === "google") {
+                const dbUser = await fetchUserByEmailSSO(user.email!);
                 return true;
-            } catch (error) {
-                console.error('SignIn callback error:', error);
-                return false;
             }
+            return true;
         },
         async jwt({ token, user, account }) {
-            try {
-                if (user) {
-                    if (account?.provider === "google") {
-                        const dbUser = await fetchUserByEmailSSO(user.email);
-                        if (dbUser) {
-                            token.id = dbUser.id;
-                            token.email = dbUser.email;
-                            token.name = dbUser.name;
-                            token.school = dbUser.school;
-                            token.major = dbUser.major;
-                            token.username = dbUser.username;
-                            token.year = dbUser.year;
-                            token.avatarUrl = dbUser.avatarUrl;
-                        }
-                    } else {
-                        // Cast user to our extended User type
-                        const customUser = user as any;
-                        token.id = customUser.id;
-                        token.email = customUser.email;
-                        token.username = customUser.username;
-                        token.name = customUser.name;
-                        token.school = customUser.school;
-                        token.major = customUser.major;
-                        token.year = customUser.year;
-                        token.avatarUrl = customUser.avatarUrl;
+            if (user) {
+                if (account?.provider === "google") {
+                    const dbUser = await fetchUserByEmailSSO(user.email!);
+                    if (dbUser) {
+                        Object.assign(token, dbUser);
                     }
+                } else {
+                    Object.assign(token, user);
                 }
-                return token;
-            } catch (error) {
-                console.error('JWT callback error:', error);
-                return token;
             }
+            return token;
         },
         async session({ session, token }) {
-            try {
-                if (session?.user && token) {
-                    session.user.id = token.id;
-                    session.user.email = token.email;
-                    session.user.username = token.username;
-                    session.user.name = token.name;
-                    session.user.school = token.school;
-                    session.user.major = token.major;
-                    session.user.year = token.year;
-                    session.user.avatarUrl = token.avatarUrl;
-                }
-                return session;
-            } catch (error) {
-                console.error('Session callback error:', error);
-                return session;
+            if (session.user) {
+                Object.assign(session.user, token);
             }
-        },
-        async redirect({ url, baseUrl }) {
-            // Handle relative URLs
-            if (url.startsWith("/")) return `${baseUrl}${url}`;
-            
-            // Handle same origin URLs
-            if (new URL(url).origin === baseUrl) return url;
-            
-            // Default redirect to home page
-            return baseUrl;
+            return session;
         },
     },
 });

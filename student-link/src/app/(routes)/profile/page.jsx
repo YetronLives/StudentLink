@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "@/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from './profile.module.css';
+import {useSession} from "next-auth/react";
 
 export default function Profile() {
     const { data: session, status } = useSession();
