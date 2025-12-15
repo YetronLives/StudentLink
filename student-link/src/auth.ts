@@ -11,6 +11,15 @@ console.log('NextAuth Environment Check:', {
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
 });
 
+// Add debug logging for callbacks
+const originalConsoleLog = console.log;
+console.log = (...args) => {
+  if (args[0]?.includes?.('NextAuth') || args[0]?.includes?.('redirect')) {
+    originalConsoleLog('[NextAuth Debug]', ...args);
+  }
+  originalConsoleLog(...args);
+};
+
 export default NextAuth({
     secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-development",
     providers: [
@@ -40,14 +49,15 @@ export default NextAuth({
         }),
     ],
     pages: {
-        signIn: "/signin",
+        signIn: "/login",
     },
     callbacks: {
         async signIn({ user, account }) {
-            if (account.provider === "google") {
+            if (account?.provider === "google") {
                 const dbUser = await fetchUserByEmailSSO(user.email);
                 if (!dbUser) {
-                    return `/finish-registration?email=${encodeURIComponent(user.email)}`;
+                    // Don't return a URL here - use redirect callback instead
+                    return false;
                 }
             }
             return true;
@@ -95,8 +105,13 @@ export default NextAuth({
             return session;
         },
         async redirect({ url, baseUrl }) {
+            // Handle relative URLs
             if (url.startsWith("/")) return `${baseUrl}${url}`;
+            
+            // Handle same origin URLs
             if (new URL(url).origin === baseUrl) return url;
+            
+            // Default redirect to home page
             return baseUrl;
         },
     },
