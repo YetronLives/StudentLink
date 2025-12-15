@@ -24,11 +24,16 @@ export default NextAuth({
             },
             async authorize(credentials) {
                 try {
+                    console.log("🧠 [NextAuth] Authorize called with:", credentials);
+
                     if (!credentials?.email || !credentials.password) {
+                        console.error("🚨 Missing credentials in authorize()");
                         return null;
                     }
 
                     const user = await validateUserCredentials(credentials.email, credentials.password);
+                    console.log("✅ [NextAuth] validateUserCredentials returned:", user);
+
                     return user;
                 } catch (error) {
                     console.error('Credentials authorize error:', error);
